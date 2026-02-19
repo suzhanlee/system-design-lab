@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(gradle:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
