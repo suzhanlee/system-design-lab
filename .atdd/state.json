@@ -1,0 +1,15 @@
+{
+  "sessions": {
+    "url-shortener": {
+      "topic": "url-shortener",
+      "phase": "validate_completed",
+      "basePath": ".atdd/sessions/url-shortener",
+      "createdAt": "2026-02-27T00:00:00Z",
+      "interviewCompletedAt": "2026-02-27T00:00:00Z",
+      "validateCompletedAt": "2026-02-27T00:00:00Z",
+      "selfReviewScore": "21/25",
+      "selfReviewGrade": "B",
+      "validationResult": "WARN"
+    }
+  }
+}
