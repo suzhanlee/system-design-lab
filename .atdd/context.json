@@ -1,8 +1,8 @@
 {
   "topic": "url-shortener",
   "date": "2026-02-27",
-  "status": "completed",
-  "phase": "gherkin",
+  "status": "in_progress",
+  "phase": "adr",
   "basePath": ".atdd/sessions/url-shortener",
   "module": "url-shortener",
   "featurePath": "url-shortener/src/test/resources/features/url-shortener.feature",
