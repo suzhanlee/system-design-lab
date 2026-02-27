@@ -11,7 +11,9 @@
       "Bash(ls:*)",
       "Bash(do:*)",
       "Bash(rm:*)",
-      "Bash(java:*)"
+      "Bash(java:*)",
+      "Skill(adr)",
+      "WebSearch"
     ]
   }
 }
