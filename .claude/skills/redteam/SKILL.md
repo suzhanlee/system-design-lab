@@ -127,15 +127,30 @@ Read {basePath}/adr/*.md
 ```
 {basePath}/redteam/critique-[ADR번호].md
 ```
+**중요**: 각 이슈에 결정 필드(체크박스 + 설명란) 포함
 
-### 4. 사용자 결정 대기
-각 이슈에 대해 사용자가 결정
-- **ACCEPT**: 비평 수용, ADR 수정
-- **DEFER**: 나중에 처리, Backlog 추가
-- **REJECT**: 거부, 사유 문서화
+### 4. 사용자 편집 대기
+Critique Report 생성 후 사용자에게 알림:
+```
+📝 Critique Report가 생성되었습니다.
+파일: {basePath}/redteam/critique-[번호].md
 
-### 5. 종료 처리
-모든 결정 완료 후:
+각 이슈의 결정 필드를 편집해주세요:
+1. 체크박스: [ ] → [v], [~], [x], [d]
+2. 화살표 뒤에 결정 사유 작성
+
+편집 완료 후 "완료"라고 알려주세요.
+```
+
+### 5. 결정 파싱 및 처리
+사용자 완료 신호 후:
+1. critique 파일 읽어 결정 파싱
+2. ACCEPT 항목 → ADR 수정
+3. DEFER 항목 → backlog.md 추가
+4. REJECT 항목 → decisions.md 기록
+
+### 6. 종료 처리
+모든 결정 처리 후:
 1. context.json의 `status`를 "completed"로 변경
 2. `updated_at` 업데이트
 3. 세션 종료 → Hook이 `/design` 자동 실행
@@ -150,23 +165,55 @@ Read {basePath}/adr/*.md
 - **검토 일시**: YYYY-MM-DD HH:mm
 - **전체 위험도**: [HIGH | MEDIUM | LOW]
 
+---
+
 ## 이슈 목록
 
-### [SEC-1] 보안 이슈 제목
+### [SEC-1] 보안 이슈 제목 `[⬜]`
 - **관점**: Security
 - **심각도**: HIGH
 - **설명**: 문제 설명
 - **영향**: 어떤 영향이 있는가
 - **제안**: 개선 방안
+- **결정**:
+  - [ ] ACCEPT → _(수용 사유 또는 수정안)_
+  - [ ] DEFER → _(보류 사유)_
+  - [ ] REJECT → _(거부 사유)_
 
-### [PERF-1] 성능 이슈 제목
+### [PERF-1] 성능 이슈 제목 `[⬜]`
 - **관점**: Performance
 - **심각도**: MEDIUM
 - **설명**: 문제 설명
 - **영향**: 어떤 영향이 있는가
 - **제안**: 개선 방안
+- **결정**:
+  - [ ] ACCEPT → _(수용 사유 또는 수정안)_
+  - [ ] DEFER → _(보류 사유)_
+  - [ ] REJECT → _(거부 사유)_
 
 ...
+
+---
+
+## 결정 가이드
+
+| 체크 | 의미 | 동작 |
+|------|------|------|
+| `[v]` | ACCEPT | ADR에 제안 반영 |
+| `[~]` | ACCEPT (수정) | 사용자 설명란의 대안 적용 |
+| `[x]` | REJECT | 거부 사유 기록 |
+| `[d]` | DEFER | backlog.md에 추가 |
+
+**편집 예시:**
+```markdown
+### [SEC-1] 악성 URL 방지 `[v]`
+- **결정**:
+  - [v] ACCEPT → URL 프로토콜 검증만 우선 적용
+  - [ ] DEFER →
+  - [ ] REJECT →
+```
+
+---
 
 ## 요약
 
@@ -188,34 +235,97 @@ Read {basePath}/adr/*.md
 
 ## 사용자 결정 프로세스
 
-Critique Report를 받은 후, 각 이슈에 대해 결정:
+### 1단계: Critique 파일 편집
+critique-*.md 파일에서 각 이슈의 결정 필드를 편집합니다:
 
-### ACCEPT (수용)
-```
-비평을 수용하고 Plan Mode에서 수정 계획 수립
-→ `EnterPlanMode` 툴로 Plan Mode 진입
-→ 수정 계획 작성 (어떤 섹션을, 어떻게 수정할지)
-→ 사용자 승인 후 ADR 수정
-→ /redteam 재실행
+1. **체크박스 선택**: `[ ]`을 `[v]`, `[~]`, `[x]`, `[d]`로 변경
+2. **설명 작성**: 화살표(`→`) 뒤에 결정 사유 또는 대안 작성
+3. **제목 상태 표시**: 제목의 `[⬜]`를 선택한 기호로 변경
+
+**편집 예시:**
+```markdown
+### [SEC-1] 악성 URL 방지 `[v]`
+- **관점**: Security
+- **심각도**: HIGH
+- **설명**: URL 검증이 부족함
+- **제안**: 프로토콜 및 도메인 화이트리스트 적용
+- **결정**:
+  - [v] ACCEPT → URL 프로토콜 검증만 우선 적용
+  - [ ] DEFER →
+  - [ ] REJECT →
+
+### [PERF-1] 캐시 미적용 `[d]`
+- **결정**:
+  - [ ] ACCEPT →
+  - [d] DEFER → MVP 이후 성능 최적화 단계에서 처리
+  - [ ] REJECT →
 ```
 
-### DEFER (보류)
-```
-나중에 처리
-→ {basePath}/redteam/backlog.md에 추가
-→ 다음 단계 진행
-```
+### 2단계: 완료 신호
+편집 완료 후 AI에게 "완료" 또는 "결정 완료"라고 알립니다.
 
-### REJECT (거부)
-```
-비평을 거부
-→ {basePath}/redteam/decisions.md에 거부 사유 기록
-→ 다음 단계 진행
-```
+### 3단계: AI가 결정 처리
+AI가 critique 파일을 읽어 결정을 파싱하고 자동으로 처리:
+
+| 결정 | AI 동작 |
+|------|---------|
+| `[v]` ACCEPT | ADR에 제안 반영 |
+| `[~]` ACCEPT (수정) | 설명란의 사용자 대안으로 ADR 수정 |
+| `[x]` REJECT | decisions.md에 거부 사유 기록 |
+| `[d]` DEFER | backlog.md에 추가 |
+
+---
+
+## 결정 표기법
+
+| 기호 | 의미 | 사용 시점 |
+|------|------|-----------|
+| `v` | ACCEPT | 제안 그대로 수용 |
+| `~` | ACCEPT (수정) | 제안 대신 사용자 대안 적용 |
+| `x` | REJECT | 제안 거부 |
+| `d` | DEFER | 나중에 처리 |
 
 ## 결정 기록 예시
 
-**decisions.md**
+**critique-001.md (편집 전)**
+```markdown
+### [SEC-1] SQL Injection 취약점 `[⬜]`
+- **관점**: Security
+- **심각도**: HIGH
+- **설명**: 사용자 입력이 검증 없이 쿼리에 포함됨
+- **제안**: Prepared Statement 사용
+- **결정**:
+  - [ ] ACCEPT → _(수용 사유 또는 수정안)_
+  - [ ] DEFER → _(보류 사유)_
+  - [ ] REJECT → _(거부 사유)_
+```
+
+**critique-001.md (편집 후)**
+```markdown
+### [SEC-1] SQL Injection 취약점 `[v]`
+- **관점**: Security
+- **심각도**: HIGH
+- **설명**: 사용자 입력이 검증 없이 쿼리에 포함됨
+- **제안**: Prepared Statement 사용
+- **결정**:
+  - [v] ACCEPT → Prepared Statement + 입력값 검증 둘 다 적용
+  - [ ] DEFER →
+  - [ ] REJECT →
+
+### [PERF-1] N+1 Query 가능성 `[d]`
+- **결정**:
+  - [ ] ACCEPT →
+  - [d] DEFER → 현재 트래픽에서는 문제되지 않음, 성능 모니터링 후 필요시 개선
+  - [ ] REJECT →
+
+### [REL-1] 장애 복구 미정의 `[x]`
+- **결정**:
+  - [ ] ACCEPT →
+  - [ ] DEFER →
+  - [x] REJECT → MVP 단계에서는 과도한 엔지니어링, 안정화 후 별도 ADR로 다룰 예정
+```
+
+**decisions.md (AI가 자동 생성)**
 ```markdown
 # 사용자 결정 로그
 
@@ -223,18 +333,17 @@ Critique Report를 받은 후, 각 이슈에 대해 결정:
 
 ### [SEC-1] SQL Injection 취약점
 - **결정**: ACCEPT
-- **이유**: 명백한 보안 취약점
-- **조치**: Prepared Statement 사용하도록 ADR 수정
+- **이유**: Prepared Statement + 입력값 검증 둘 다 적용
+- **조치**: ADR 수정 완료
 
 ### [PERF-1] N+1 Query 가능성
 - **결정**: DEFER
-- **이유**: 현재 트래픽에서는 문제되지 않음
-- **조치**: 성능 모니터링 후 필요시 개선
+- **이유**: 현재 트래픽에서는 문제되지 않음, 성능 모니터링 후 필요시 개선
+- **조치**: backlog.md에 추가
 
 ### [REL-1] 장애 복구 미정의
 - **결정**: REJECT
-- **이유**: MVP 단계에서는 과도한 엔지니어링
-- **사유**: 안정화 후 별도 ADR로 다룰 예정
+- **이유**: MVP 단계에서는 과도한 엔지니어링, 안정화 후 별도 ADR로 다룰 예정
 ```
 
 ## 다음 단계
@@ -259,8 +368,12 @@ Critique Report를 받은 후, 각 이슈에 대해 결정:
 
 ## MUST 체크리스트 (실행 후)
 - [ ] 6관점 분석 완료
-- [ ] Critique Report 생성
-- [ ] 각 이슈에 대해 ACCEPT/DEFER/REJECT 결정 수집
+- [ ] Critique Report 생성 (결정 필드 포함)
+- [ ] 사용자 편집 완료 대기 ("완료" 신호)
+- [ ] critique 파일에서 결정 파싱
+- [ ] ADR 수정 적용 (ACCEPT 항목)
+- [ ] backlog.md 업데이트 (DEFER 항목)
+- [ ] decisions.md 업데이트 (REJECT 항목)
 - [ ] context.json 업데이트: `status`를 "completed"로 변경
 
 ### 완료 시 context.json 업데이트
