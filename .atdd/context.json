@@ -1,11 +1,22 @@
 {
   "topic": "url-shortener",
   "date": "2026-02-27",
-  "status": "in_progress",
-  "phase": "adr",
+  "status": "completed",
+  "phase": "redteam",
   "basePath": ".atdd/sessions/url-shortener",
   "module": "url-shortener",
   "featurePath": "url-shortener/src/test/resources/features/url-shortener.feature",
   "created_at": "2026-02-27T00:00:00Z",
-  "updated_at": "2026-02-27T12:00:00Z"
+  "updated_at": "2026-02-27T15:30:00+09:00",
+  "redteam": {
+    "completed": true,
+    "total_issues": 22,
+    "accepted": 13,
+    "rejected": 9,
+    "high_priority": {
+      "total": 2,
+      "accepted": 1,
+      "rejected": 1
+    }
+  }
 }
