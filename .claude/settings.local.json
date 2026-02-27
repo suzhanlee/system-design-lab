@@ -4,7 +4,14 @@
       "Bash(test:*)",
       "Bash(gradle:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(curl:*)",
+      "Bash(head:*)",
+      "Bash(ls:*)",
+      "Bash(do:*)",
+      "Bash(rm:*)",
+      "Bash(java:*)"
     ]
   }
 }

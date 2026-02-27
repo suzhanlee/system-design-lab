@@ -2,6 +2,8 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     kotlin("jvm") version "1.9.23" apply false
+    kotlin("plugin.spring") version "1.9.23" apply false
+    kotlin("plugin.jpa") version "1.9.23" apply false
     id("org.springframework.boot") version "3.2.5" apply false
     id("io.spring.dependency-management") version "1.1.4" apply false
 }
@@ -26,13 +28,13 @@ subprojects {
     }
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = property("javaVersion") as String
-        targetCompatibility = property("javaVersion") as String
+        sourceCompatibility = JavaVersion.VERSION_17.toString()
+        targetCompatibility = JavaVersion.VERSION_17.toString()
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
-            jvmTarget = property("javaVersion") as String
+            jvmTarget = "17"
         }
     }
 }
